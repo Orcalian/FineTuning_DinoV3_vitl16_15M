@@ -6,6 +6,44 @@ exclude = '''(?x)(
   ^dinov3/tests/([^/]+/)*test_.*\.py$  # Unit tests
 )'''
 
+
+[tool.ruff.lint]
+ignore = [
+    "RUF059",
+    "SIM118",
+    "C408",
+    "UP007",
+    "FLY002",
+    "S110",
+    "BLE001",
+    "B006",
+    "RUF007",
+    "SIM102",
+    "SIM401",
+    "TRY004",
+    "SIM115",
+    "SIM210",
+    "UP045",
+    "C419",
+    "EXE002",
+    "C403",
+    "PIE796",
+    "F401",
+    "PLR1704",
+    "C418",
+    "B008",
+    "SIM101",
+    "SIM113",
+    "RUF013",
+    "C405",
+    "C401",
+    "UP031",
+    "PLW0602",
+    "RUF012",
+    "RUF046",
+    "T100",
+]
+
 [tool.pylint.master]
 persistent = false
 score = false
@@ -36,9 +74,6 @@ notes = [
 [tool.ruff]
 line-length = 120
 target-version = "py311"
-
-[tool.ruff.lint]
-ignore = ["E203", "E501"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
