@@ -38,7 +38,7 @@ jobs:
           docstr-coverage dinov3
       - name: Run mypy
         if: always()
-        ontinue-on-error: true
+        continue-on-error: true
         run: |
           mypy --txt-report .
           [ -f index.txt ] && cat index.txt
