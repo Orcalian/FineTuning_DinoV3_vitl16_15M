@@ -5,11 +5,11 @@
 
 import logging
 from functools import partial
-from typing import Any, Dict, List
+from typing import Any
 
 import torch
 import torch.distributed as dist
-import torch.nn as nn
+from torch import nn
 from torch.distributed._composable.fsdp import MixedPrecisionPolicy, fully_shard
 from torch.distributed.device_mesh import DeviceMesh, init_device_mesh
 from torch.distributed.fsdp import register_fsdp_forward_method
@@ -17,7 +17,6 @@ from torch.distributed.fsdp._fully_shard._fsdp_state import FSDPState
 from torch.utils.checkpoint import create_selective_checkpoint_contexts
 
 from dinov3.utils import utils
-
 
 logger = logging.getLogger("dinov3")
 
@@ -86,7 +85,7 @@ def compile_transformer(cfg, model: nn.Module):
         model.blocks[block_id] = wrap_compile_block(block, cfg.train.cudagraphs, is_backbone_block=True)
 
 
-def fsdp_convnext(fsdp_config: Dict[str, Any], model: nn.Module):
+def fsdp_convnext(fsdp_config: dict[str, Any], model: nn.Module):
     stages = model.stages
     assert isinstance(stages, nn.ModuleList)
     # FSDP wrap at stage level
@@ -107,7 +106,7 @@ def fsdp_convnext(fsdp_config: Dict[str, Any], model: nn.Module):
     register_fsdp_forward_method(model, "get_intermediate_layers")
 
 
-def fsdp_transformer(fsdp_config: Dict[str, Any], model: nn.Module):
+def fsdp_transformer(fsdp_config: dict[str, Any], model: nn.Module):
     # Backbone - FSDP every block
     blocks = model.blocks
     assert isinstance(blocks, nn.ModuleList)
@@ -125,10 +124,10 @@ def fsdp_transformer(fsdp_config: Dict[str, Any], model: nn.Module):
 
 def ac_compile_parallelize(
     trained_model: nn.ModuleDict,
-    inference_only_models: List[nn.ModuleDict],
+    inference_only_models: list[nn.ModuleDict],
     cfg: Any,
     trained_model_process_group: dist.ProcessGroup | None = None,
-    inference_only_models_process_groups: List[dist.ProcessGroup] | None = None,
+    inference_only_models_process_groups: list[dist.ProcessGroup] | None = None,
 ) -> None:
     """
     Order of the wrappers:
@@ -136,9 +135,9 @@ def ac_compile_parallelize(
     2/ Compile blocks
     3/ FSDP blocks + global model
     """
-    assert (
-        isinstance(trained_model, nn.ModuleDict) and "backbone" in trained_model.keys()
-    ), f"{trained_model} does not contain a backbone?"
+    assert isinstance(trained_model, nn.ModuleDict) and "backbone" in trained_model.keys(), (
+        f"{trained_model} does not contain a backbone?"
+    )
     logger.info("DISTRIBUTED FSDP -- preparing model for distributed training")
     if utils.has_batchnorms(trained_model):
         raise NotImplementedError

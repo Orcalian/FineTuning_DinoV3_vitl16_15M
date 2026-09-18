@@ -26,10 +26,11 @@ NOTE MEMOIRE (important a grande echelle, ex: 15M images) :
   (un buffer d'octets + des offsets). Les arrays numpy n'ont pas de refcount
   par element : le fork les partage vraiment en lecture seule, sans fuite.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any
 
 import numpy as np
 
@@ -53,7 +54,7 @@ class HistoFolder(ExtendedVisionDataset):
             transform=transform,
             target_transform=target_transform,
         )
-        paths: List[str] = self._build_index(Path(root))
+        paths: list[str] = self._build_index(Path(root))
         if not paths:
             raise RuntimeError(f"HistoFolder: aucune image trouvee sous {root}")
 
@@ -69,11 +70,11 @@ class HistoFolder(ExtendedVisionDataset):
 
         print(f"HistoFolder: {self._n} images depuis {root}")
 
-    def _build_index(self, root: Path) -> List[str]:
+    def _build_index(self, root: Path) -> list[str]:
         # 1) si root contient des .txt, on lit les chemins listes dedans (mode DinoBloom)
         txts = sorted(root.glob("*.txt")) if root.is_dir() else []
         if txts:
-            paths: List[str] = []
+            paths: list[str] = []
             for txt in txts:
                 print(f"HistoFolder: lecture de {txt}")
                 with open(txt, "r", encoding="utf-8") as fh:
@@ -99,12 +100,13 @@ class HistoFolder(ExtendedVisionDataset):
         self._gc_counter = getattr(self, "_gc_counter", 0) + 1
         if self._gc_counter % 5000 == 0:
             import gc
+
             gc.collect()
         path = self._path(index)
         with open(path, "rb") as f:
             return f.read()
 
-    def get_target(self, index: int) -> Optional[Any]:
+    def get_target(self, index: int) -> Any | None:
         # SSL : pas de label.
         return None
 

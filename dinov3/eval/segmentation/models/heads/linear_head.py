@@ -4,8 +4,8 @@
 # the terms of the DINOv3 License Agreement.
 
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
+from torch import nn
 
 
 class LinearHead(nn.Module):

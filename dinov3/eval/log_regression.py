@@ -8,13 +8,13 @@ import sys
 import time
 from dataclasses import dataclass, field
 from functools import partial
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import torch
-import torch.backends.cudnn as cudnn
 import torch.distributed
 from omegaconf import MISSING
 from torch import nn
+from torch.backends import cudnn
 from torch.utils.data import TensorDataset
 from torchmetrics import MetricTracker
 
@@ -65,7 +65,7 @@ _CPU_DEVICE = torch.device("cpu")
 @dataclass
 class TrainConfig:
     dataset: str = MISSING  # train dataset path
-    val_dataset: Optional[str] = None  # val dataset path. If None, choose hyperparameters on 10% of the train set.
+    val_dataset: str | None = None  # val dataset path. If None, choose hyperparameters on 10% of the train set.
     val_metric_type: ClassificationMetricType = ClassificationMetricType.MEAN_ACCURACY
     batch_size: int = 256  # batch size for train and val set feature extraction
     num_workers: int = 5  # number of workers for train and val set feature extraction
@@ -80,7 +80,7 @@ class EvalConfig:
     test_dataset: str = MISSING  # test dataset path
     batch_size: int | None = None  # use train.batch_size if None
     num_workers: int = 5
-    test_metric_type: Optional[ClassificationMetricType] = None
+    test_metric_type: ClassificationMetricType | None = None
 
 
 @dataclass
@@ -92,7 +92,7 @@ class TransformConfig:
 @dataclass
 class FewShotConfig:
     enable: bool = False  # whether to use few-shot evaluation
-    k_or_percent: Optional[float] = None  # number of elements or % to take per class
+    k_or_percent: float | None = None  # number of elements or % to take per class
     n_tries: int = 1  # number of tries for few-shot evaluation
 
 
@@ -174,7 +174,7 @@ def sweep_C_values(
 ):
     metric_tracker = MetricTracker(val_metric, maximize=True)
     ALL_C = 10**C_POWER_RANGE
-    logreg_models: Dict[float, Any] = {}
+    logreg_models: dict[float, Any] = {}
 
     train_features_device = torch.device(logreg_config.train_features_device)
     train_dtype = as_torch_dtype(logreg_config.train_dtype)
@@ -195,7 +195,7 @@ def sweep_C_values(
             logreg_config=logreg_config,
         )
 
-    gather_list: List[Dict[float, Any]] = [{} for _ in range(get_world_size())]
+    gather_list: list[dict[float, Any]] = [{} for _ in range(get_world_size())]
     torch.distributed.all_gather_object(gather_list, logreg_models)
 
     for logreg_dict in gather_list:

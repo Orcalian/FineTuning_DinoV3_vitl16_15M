@@ -12,7 +12,8 @@ from dinov3.eval.detection.config import DetectionHeadConfig
 from dinov3.eval.detection.models.detr import PostProcess, build_model
 from dinov3.eval.detection.models.position_encoding import PositionEncoding
 
-from .backbones import Weights as BackboneWeights, dinov3_vit7b16, dinov3_vitl16plus, convert_path_or_url_to_url
+from .backbones import Weights as BackboneWeights
+from .backbones import convert_path_or_url_to_url, dinov3_vit7b16, dinov3_vitl16plus
 from .utils import _DINOV3_BASE_URL, _safe_load_state_dict_from_url
 
 

@@ -7,22 +7,21 @@ import json
 import logging
 import os
 import sys
-from typing import Any, Dict
+from typing import Any
 
 import torch
 from omegaconf import OmegaConf
 
-import dinov3.distributed as distributed
+from dinov3 import distributed
 from dinov3.eval.depth.checkpoint_utils import find_latest_checkpoint
 from dinov3.eval.depth.config import DepthConfig
 from dinov3.eval.depth.eval import evaluate_depther_with_config
 from dinov3.eval.depth.models import make_depther_from_config
 from dinov3.eval.depth.train import train_model_with_backbone
-
 from dinov3.eval.helpers import args_dict_to_dataclass, cli_parser, write_results
 from dinov3.eval.setup import load_model_and_context
-from dinov3.run.init import job_context
 from dinov3.hub.depthers import _get_depther_config, dinov3_vit7b16_dd
+from dinov3.run.init import job_context
 
 RESULTS_FILENAME = "results-depth.csv"
 MAIN_METRICS = [".*_abs_rel", ".*_a1", ".*_rmse"]
@@ -31,7 +30,7 @@ MAIN_METRICS = [".*_abs_rel", ".*_a1", ".*_rmse"]
 logger = logging.getLogger("dinov3")
 
 
-def _add_dataset_prefix_to_results(results_dict: Dict[str, float], dataset_name: str):
+def _add_dataset_prefix_to_results(results_dict: dict[str, float], dataset_name: str):
     final_dict = {dataset_name + "_" + k: v for k, v in results_dict.items()}
     return final_dict
 

@@ -5,32 +5,31 @@
 
 import logging
 import os
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import torch
 import torch.distributed as dist
 from omegaconf import OmegaConf
 from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.optim.optimizer import Optimizer
 from torch.optim.lr_scheduler import LRScheduler
+from torch.optim.optimizer import Optimizer
 
-import dinov3.distributed as distributed
-from dinov3.eval.depth.data import build_dataloader
+from dinov3 import distributed
+from dinov3.eval.depth.checkpoint_utils import find_latest_checkpoint, load_checkpoint, save_checkpoint
 from dinov3.eval.depth.config import (
     DepthConfig,
     ResultConfig,
     make_depth_eval_transforms_from_config,
     make_depth_train_transforms_from_config,
 )
-
-from dinov3.eval.depth.checkpoint_utils import find_latest_checkpoint, load_checkpoint, save_checkpoint
+from dinov3.eval.depth.data import build_dataloader
 from dinov3.eval.depth.datasets.datasets_utils import _EvalCropType, make_valid_mask
-from dinov3.eval.depth.loss import MultiLoss
-from dinov3.eval.depth.models import Depther, make_depther_from_config
-from dinov3.eval.depth.metrics import DEPTH_METRICS
-from dinov3.eval.depth.schedulers import build_scheduler
 from dinov3.eval.depth.eval import evaluate_depther_with_dataloader
-
+from dinov3.eval.depth.loss import MultiLoss
+from dinov3.eval.depth.metrics import DEPTH_METRICS
+from dinov3.eval.depth.models import Depther, make_depther_from_config
+from dinov3.eval.depth.schedulers import build_scheduler
 from dinov3.eval.depth.utils import setup_model_ddp
 from dinov3.logging import MetricLogger, SmoothedValue
 from dinov3.utils import fix_random_seeds
@@ -189,7 +188,7 @@ def run_epochs(config: DepthConfig, backbone: torch.nn.Module, autocast_dtype: t
     val_transforms = make_depth_eval_transforms_from_config(config, split="val")
     train_dataloader = build_dataloader(
         transforms=train_transforms,
-        dataset_str=getattr(config.datasets, "train") + f":root={config.datasets.root}",
+        dataset_str=config.datasets.train + f":root={config.datasets.root}",
         device=torch.cuda.current_device(),
         split="train",
         batch_size=config.bs,
@@ -200,7 +199,7 @@ def run_epochs(config: DepthConfig, backbone: torch.nn.Module, autocast_dtype: t
 
     val_dataloader = build_dataloader(
         transforms=val_transforms,
-        dataset_str=getattr(config.datasets, "val") + f":root={config.datasets.root}",
+        dataset_str=config.datasets.val + f":root={config.datasets.root}",
         device=torch.cuda.current_device(),
         split="val",
         batch_size=1,

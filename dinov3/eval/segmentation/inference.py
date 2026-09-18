@@ -3,7 +3,7 @@
 # This software may be used and distributed in accordance with
 # the terms of the DINOv3 License Agreement.
 
-from typing import Callable, Optional, Tuple
+from collections.abc import Callable
 
 import torch
 import torch.nn.functional as F
@@ -18,8 +18,8 @@ def make_inference(
     decoder_head_type: str = "linear",
     rescale_to=(512, 512),
     n_output_channels: int = 256,
-    crop_size: Optional[Tuple[int]] = None,
-    stride: Optional[Tuple[int]] = None,
+    crop_size: tuple[int] | None = None,
+    stride: tuple[int] | None = None,
     apply_horizontal_flip: bool = False,
     num_max_forward: int = 1,
     output_activation: Callable | None = None,
@@ -95,8 +95,8 @@ def slide_inference(
     segmentation_model: nn.Module,
     decoder_head_type: str = "linear",
     n_output_channels: int = 256,
-    crop_size: Tuple = (512, 512),
-    stride: Tuple = (341, 341),
+    crop_size: tuple = (512, 512),
+    stride: tuple = (341, 341),
     num_max_forward: int = 1,
 ):
     """Inference by sliding-window with overlap.

@@ -21,18 +21,18 @@ Misc functions, including distributed helpers.
 
 Mostly copy-paste from torchvision references.
 """
-import copy
-from typing import List, Optional
 
-import dinov3.distributed as distributed
+import copy
+
 import torch
 import torch.distributed as dist
-import torch.nn as nn
 import torch.nn.functional as F
 
 # needed due to empty tensor bug in pytorch and torchvision 0.5
 import torchvision
-from torch import Tensor
+from torch import Tensor, nn
+
+from dinov3 import distributed
 
 
 def reduce_dict(input_dict, average=True):
@@ -77,7 +77,7 @@ def _max_by_axis(the_list):
     return maxes
 
 
-def nested_tensor_from_tensor_list(tensor_list: List[Tensor]):
+def nested_tensor_from_tensor_list(tensor_list: list[Tensor]):
     # TODO make this more general
     if tensor_list[0].ndim == 3:
         # TODO make it support different-sized images
@@ -97,8 +97,8 @@ def nested_tensor_from_tensor_list(tensor_list: List[Tensor]):
     return NestedTensor(tensor, mask)
 
 
-class NestedTensor(object):
-    def __init__(self, tensors, mask: Optional[Tensor]):
+class NestedTensor:
+    def __init__(self, tensors, mask: Tensor | None):
         self.tensors = tensors
         self.mask = mask
 

@@ -3,12 +3,12 @@
 # This software may be used and distributed in accordance with
 # the terms of the DINOv3 License Agreement.
 
-from functools import partial
 import logging
+from functools import partial
 
 import torch
 
-import dinov3.distributed as distributed
+from dinov3 import distributed
 from dinov3.data import DatasetWithEnumeratedTargets, SamplerType, make_data_loader, make_dataset
 from dinov3.eval.segmentation.inference import make_inference
 from dinov3.eval.segmentation.metrics import (
@@ -70,7 +70,7 @@ def evaluate_segmentation_model(
 
     all_metric_values = torch.stack(all_metric_values)
     if distributed.is_enabled():
-        all_metric_values = torch.cat(distributed.gather_all_tensors((all_metric_values)))
+        all_metric_values = torch.cat(distributed.gather_all_tensors(all_metric_values))
     final_metrics = calculate_segmentation_metrics(
         all_metric_values,
         metrics=["mIoU", "dice", "fscore"],

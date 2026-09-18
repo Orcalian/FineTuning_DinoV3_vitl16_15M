@@ -6,9 +6,9 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 # Adapted from: https://github.com/facebookresearch/detr/blob/master/models/detr.py
 
-from typing import Optional
+
 import torch
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn import functional as F
 
 from dinov3.eval.segmentation.models.utils.position_encoding import PositionEmbeddingSine
@@ -81,15 +81,15 @@ class SelfAttentionLayer(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def with_pos_embed(self, tensor, pos: Optional[Tensor]):
+    def with_pos_embed(self, tensor, pos: Tensor | None):
         return tensor if pos is None else tensor + pos
 
     def forward_post(
         self,
         tgt,
-        tgt_mask: Optional[Tensor] = None,
-        tgt_key_padding_mask: Optional[Tensor] = None,
-        query_pos: Optional[Tensor] = None,
+        tgt_mask: Tensor | None = None,
+        tgt_key_padding_mask: Tensor | None = None,
+        query_pos: Tensor | None = None,
     ):
         q = k = self.with_pos_embed(tgt, query_pos)
         tgt2 = self.self_attn(q, k, value=tgt, attn_mask=tgt_mask, key_padding_mask=tgt_key_padding_mask)[0]
@@ -101,9 +101,9 @@ class SelfAttentionLayer(nn.Module):
     def forward_pre(
         self,
         tgt,
-        tgt_mask: Optional[Tensor] = None,
-        tgt_key_padding_mask: Optional[Tensor] = None,
-        query_pos: Optional[Tensor] = None,
+        tgt_mask: Tensor | None = None,
+        tgt_key_padding_mask: Tensor | None = None,
+        query_pos: Tensor | None = None,
     ):
         tgt2 = self.norm(tgt)
         q = k = self.with_pos_embed(tgt2, query_pos)
@@ -115,9 +115,9 @@ class SelfAttentionLayer(nn.Module):
     def forward(
         self,
         tgt,
-        tgt_mask: Optional[Tensor] = None,
-        tgt_key_padding_mask: Optional[Tensor] = None,
-        query_pos: Optional[Tensor] = None,
+        tgt_mask: Tensor | None = None,
+        tgt_key_padding_mask: Tensor | None = None,
+        query_pos: Tensor | None = None,
     ):
         if self.normalize_before:
             return self.forward_pre(tgt, tgt_mask, tgt_key_padding_mask, query_pos)
@@ -142,17 +142,17 @@ class CrossAttentionLayer(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def with_pos_embed(self, tensor, pos: Optional[Tensor]):
+    def with_pos_embed(self, tensor, pos: Tensor | None):
         return tensor if pos is None else tensor + pos
 
     def forward_post(
         self,
         tgt,
         memory,
-        memory_mask: Optional[Tensor] = None,
-        memory_key_padding_mask: Optional[Tensor] = None,
-        pos: Optional[Tensor] = None,
-        query_pos: Optional[Tensor] = None,
+        memory_mask: Tensor | None = None,
+        memory_key_padding_mask: Tensor | None = None,
+        pos: Tensor | None = None,
+        query_pos: Tensor | None = None,
     ):
         tgt2 = self.multihead_attn(
             query=self.with_pos_embed(tgt, query_pos),
@@ -170,10 +170,10 @@ class CrossAttentionLayer(nn.Module):
         self,
         tgt,
         memory,
-        memory_mask: Optional[Tensor] = None,
-        memory_key_padding_mask: Optional[Tensor] = None,
-        pos: Optional[Tensor] = None,
-        query_pos: Optional[Tensor] = None,
+        memory_mask: Tensor | None = None,
+        memory_key_padding_mask: Tensor | None = None,
+        pos: Tensor | None = None,
+        query_pos: Tensor | None = None,
     ):
         tgt2 = self.norm(tgt)
         tgt2 = self.multihead_attn(
@@ -191,10 +191,10 @@ class CrossAttentionLayer(nn.Module):
         self,
         tgt,
         memory,
-        memory_mask: Optional[Tensor] = None,
-        memory_key_padding_mask: Optional[Tensor] = None,
-        pos: Optional[Tensor] = None,
-        query_pos: Optional[Tensor] = None,
+        memory_mask: Tensor | None = None,
+        memory_key_padding_mask: Tensor | None = None,
+        pos: Tensor | None = None,
+        query_pos: Tensor | None = None,
     ):
         if self.normalize_before:
             return self.forward_pre(tgt, memory, memory_mask, memory_key_padding_mask, pos, query_pos)
@@ -221,7 +221,7 @@ class FFNLayer(nn.Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-    def with_pos_embed(self, tensor, pos: Optional[Tensor]):
+    def with_pos_embed(self, tensor, pos: Tensor | None):
         return tensor if pos is None else tensor + pos
 
     def forward_post(self, tgt):

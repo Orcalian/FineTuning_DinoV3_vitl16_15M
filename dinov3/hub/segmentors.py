@@ -7,13 +7,16 @@ import os
 from enum import Enum
 
 import torch
+
 from dinov3.eval.segmentation.models import build_segmentation_decoder
 
 from .backbones import (
+    Weights as BackboneWeights,
+)
+from .backbones import (
+    convert_path_or_url_to_url,
     dinov3_vit7b16,
     dinov3_vitl16,
-    Weights as BackboneWeights,
-    convert_path_or_url_to_url,
 )
 from .utils import _DINOV3_BASE_URL, _safe_load_state_dict_from_url
 

@@ -5,8 +5,8 @@
 
 import torch
 import torch.distributed as torch_dist
-import torch.nn as nn
 import torch.nn.functional as F
+from torch import nn
 
 import dinov3.distributed as dist
 

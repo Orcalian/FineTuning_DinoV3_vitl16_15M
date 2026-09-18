@@ -4,8 +4,9 @@
 # the terms of the DINOv3 License Agreement.
 
 import os
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Optional, Union
+from typing import Any, Union
 
 from PIL import Image
 
@@ -36,10 +37,10 @@ class NYU(ExtendedVisionDataset):
         self,
         *,
         split: "NYU.Split",
-        root: Optional[str] = None,
-        transforms: Optional[Callable] = None,
-        transform: Optional[Callable] = None,
-        target_transform: Optional[Callable] = None,
+        root: str | None = None,
+        transforms: Callable | None = None,
+        transform: Callable | None = None,
+        target_transform: Callable | None = None,
         image_decoder: Decoder = ImageDataDecoder,
         target_decoder: Decoder = DenseTargetDecoder,
     ) -> None:

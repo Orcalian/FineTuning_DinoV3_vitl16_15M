@@ -43,7 +43,7 @@ def collate_data_and_cast(
     probs = torch.linspace(*mask_ratio_tuple, n_samples_masked + 1)
     upperbound = 0
     masks_list = []
-    for i in range(0, n_samples_masked):
+    for i in range(n_samples_masked):
         prob_max = probs[i + 1]
         mask = torch.BoolTensor(mask_generator(int(N * prob_max)))
         if random_circular_shift:  # apply le random circular shift to

@@ -4,19 +4,19 @@
 # the terms of the DINOv3 License Agreement.
 
 # Copyright (c) Facebook, Inc. and its affiliates.
-import numpy as np
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from collections.abc import Callable
 
+import numpy as np
 import torch
 from torch import nn
+from torch.amp import autocast
 from torch.nn import functional as F
 from torch.nn.init import normal_
-from torch.amp import autocast
 
 from dinov3.eval.segmentation.models.utils.batch_norm import get_norm
-from dinov3.eval.segmentation.models.utils.position_encoding import PositionEmbeddingSine
-from dinov3.eval.segmentation.models.utils.transformer import _get_clones, _get_activation_fn
 from dinov3.eval.segmentation.models.utils.ms_deform_attn import MSDeformAttn
+from dinov3.eval.segmentation.models.utils.position_encoding import PositionEmbeddingSine
+from dinov3.eval.segmentation.models.utils.transformer import _get_activation_fn, _get_clones
 
 
 def c2_xavier_fill(module: nn.Module) -> None:
@@ -240,7 +240,7 @@ class MSDeformAttnPixelDecoder(nn.Module):
     # @configurable
     def __init__(
         self,
-        input_shape: Dict[str, Tuple[int]],  # ShapeSpec: [channels, height, width, stride]
+        input_shape: dict[str, tuple[int]],  # ShapeSpec: [channels, height, width, stride]
         *,
         transformer_dropout: float,
         transformer_nheads: int,
@@ -248,9 +248,9 @@ class MSDeformAttnPixelDecoder(nn.Module):
         transformer_enc_layers: int,
         conv_dim: int,
         mask_dim: int,
-        norm: Optional[Union[str, Callable]] = None,
+        norm: str | Callable | None = None,
         # deformable transformer encoder args
-        transformer_in_features: List[str],
+        transformer_in_features: list[str],
         common_stride: int,
     ):
         """

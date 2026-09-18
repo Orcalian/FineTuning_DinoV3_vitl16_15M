@@ -163,7 +163,7 @@ class DiceLoss(nn.Module):
         loss_name="loss_dice",
         **kwargs,
     ):
-        super(DiceLoss, self).__init__()
+        super().__init__()
         self.smooth = smooth
         self.exponent = exponent
         self.reduction = reduction
@@ -255,7 +255,7 @@ class CrossEntropyLoss(nn.Module):
         ignore_index=255,
         avg_non_ignore=False,
     ):
-        super(CrossEntropyLoss, self).__init__()
+        super().__init__()
         self.weight = weight
         self.class_weight = class_weight
         self.loss_weight = loss_weight
@@ -282,7 +282,7 @@ class MultiSegmentationLoss(nn.Module):
     """
 
     def __init__(self, diceloss_weight=0.0, celoss_weight=0.0):
-        super(MultiSegmentationLoss, self).__init__()
+        super().__init__()
 
         if diceloss_weight > 0:
             self.loss = MultilabelDiceLoss(loss_weight=diceloss_weight)

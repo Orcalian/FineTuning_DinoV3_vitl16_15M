@@ -10,14 +10,14 @@ import sys
 import time
 from dataclasses import dataclass, field
 from functools import partial
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import torch
-import torch.backends.cudnn as cudnn
 from omegaconf import MISSING
+from torch.backends import cudnn
 from torch.nn.functional import one_hot, softmax
 
-import dinov3.distributed as distributed
+from dinov3 import distributed
 from dinov3.data import SamplerType, make_data_loader, make_dataset
 from dinov3.data.adapters import DatasetWithEnumeratedTargets
 from dinov3.data.transforms import (
@@ -52,7 +52,7 @@ class TrainConfig:
     dataset: str = MISSING  # train dataset path
     batch_size: int = 256  # batch size for train set feature extraction
     num_workers: int = 5  # number of workers for train set feature extraction
-    ks: Tuple[int, ...] = (10, 20, 100, 200)  # values of k to evaluate
+    ks: tuple[int, ...] = (10, 20, 100, 200)  # values of k to evaluate
     temperature: float = 0.07
     """
     Whether to skip the first nearest neighbor for each image in the test set.
@@ -78,7 +78,7 @@ class TransformConfig:
 @dataclass
 class FewShotConfig:
     enable: bool = False  # whether to use few-shot evaluation
-    k_or_percent: Optional[float] = None  # number of elements or % to take per class
+    k_or_percent: float | None = None  # number of elements or % to take per class
     n_tries: int = 1  # number of tries for few-shot evaluation
 
 
@@ -237,7 +237,7 @@ def eval_knn(
     save_results_func=None,
 ):
     logger.info("Start the k-NN classification.")
-    eval_metrics_dict: Dict[int, Dict[int, Dict[str, float]]] = {}  # {k: {try: {metric_name: metric_value}}}
+    eval_metrics_dict: dict[int, dict[int, dict[str, float]]] = {}  # {k: {try: {metric_name: metric_value}}}
     save_results = save_results_func is not None
     device = torch.cuda.current_device()
     partial_knn_module = partial(
@@ -250,7 +250,7 @@ def eval_knn(
 
     for try_ in train_data_dict.keys():
         train_features, train_labels = train_data_dict[try_]["train_features"], train_data_dict[try_]["train_labels"]
-        ks = sorted(set([el if el < len(train_features) else len(train_features) for el in knn_config.ks]))
+        ks = sorted(set([min(len(train_features), el) for el in knn_config.ks]))
         knn_module = partial_knn_module(train_features=train_features, train_labels=train_labels, ks=ks)
         postprocessors, metrics = {k: DictKeysModule([k]) for k in ks}, {k: metric_collection.clone() for k in ks}
         _, eval_metrics, accumulated_results = evaluate(
@@ -274,12 +274,12 @@ def eval_knn(
             eval_metrics_dict[k][try_] = {metric: v.item() * 100.0 for metric, v in eval_metrics[k].items()}
 
     if len(train_data_dict) > 1:
-        return {k: average_metrics(eval_metrics_dict[k]) for k in eval_metrics_dict.keys()}
+        return {k: average_metrics(eval_metrics_dict[k]) for k in eval_metrics_dict}
 
-    return {k: eval_metrics_dict[k][0] for k in eval_metrics_dict.keys()}
+    return {k: eval_metrics_dict[k][0] for k in eval_metrics_dict}
 
 
-def _log_and_format_results_dict(input_results_dict, few_shot_n_tries: int) -> Dict[str, float]:
+def _log_and_format_results_dict(input_results_dict, few_shot_n_tries: int) -> dict[str, float]:
     results_dict = {}
     for knn_ in input_results_dict.keys():
         if few_shot_n_tries == 1:
@@ -351,8 +351,7 @@ def eval_knn_with_model(*, model: torch.nn.Module, autocast_dtype, config: KnnEv
     # TODO: Remove as cleaner writers are used
     metrics_file_path = os.path.join(config.output_dir, "results_eval_knn.json")
     with open(metrics_file_path, "a") as f:
-        for k, v in results_dict.items():
-            f.write(json.dumps({k: v}) + "\n")
+        f.writelines(json.dumps({k: v}) + "\n" for k, v in results_dict.items())
 
     if distributed.is_enabled():
         torch.distributed.barrier()

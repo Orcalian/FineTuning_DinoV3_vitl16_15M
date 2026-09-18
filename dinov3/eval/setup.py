@@ -4,11 +4,11 @@
 # the terms of the DINOv3 License Agreement.
 
 from dataclasses import dataclass
-from typing import Tuple, TypedDict
+from typing import TypedDict
 
 import torch
-import torch.backends.cudnn as cudnn
-import torch.nn as nn
+from torch import nn
+from torch.backends import cudnn
 
 from dinov3.configs import DinoV3SetupArgs, setup_config
 from dinov3.models import build_model_for_eval
@@ -69,7 +69,7 @@ def setup_and_build_model(
     output_dir: str = "",
     opts: list | None = None,
     **ignored_kwargs,
-) -> Tuple[nn.Module, BaseModelContext]:
+) -> tuple[nn.Module, BaseModelContext]:
     cudnn.benchmark = True
     del ignored_kwargs
     setup_args = DinoV3SetupArgs(

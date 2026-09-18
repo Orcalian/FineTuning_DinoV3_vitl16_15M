@@ -4,10 +4,10 @@
 # the terms of the DINOv3 License Agreement.
 
 import logging
+
 import numpy as np
 import pandas as pd
 import torch
-
 
 pd.set_option("display.max_rows", 200)
 

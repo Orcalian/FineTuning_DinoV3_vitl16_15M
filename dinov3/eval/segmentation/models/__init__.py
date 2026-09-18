@@ -66,10 +66,9 @@ class FeatureDecoder(torch.nn.Module):
         return inputs
 
     def predict(self, inputs, rescale_to=(512, 512)):
-        with torch.inference_mode():
-            with self.autocast_ctx():
-                out = self.segmentation_model[0](inputs)  # backbone forward
-                out = self.segmentation_model[1].predict(out, rescale_to=rescale_to)  # decoder head prediction
+        with torch.inference_mode(), self.autocast_ctx():
+            out = self.segmentation_model[0](inputs)  # backbone forward
+            out = self.segmentation_model[1].predict(out, rescale_to=rescale_to)  # decoder head prediction
         return out
 
 

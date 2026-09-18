@@ -10,7 +10,7 @@ import numpy as np
 logger = logging.getLogger("dinov3")
 
 
-class CosineScheduler(object):
+class CosineScheduler:
     def __init__(
         self,
         base_value,
@@ -25,7 +25,7 @@ class CosineScheduler(object):
         self.final_value = np.float64(final_value)
         self.total_iters = total_iters
 
-        freeze_schedule = np.zeros((freeze_iters))
+        freeze_schedule = np.zeros(freeze_iters)
 
         warmup_schedule = np.linspace(start_warmup_value, base_value, warmup_iters)
 

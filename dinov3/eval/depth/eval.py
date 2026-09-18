@@ -4,16 +4,13 @@
 # the terms of the DINOv3 License Agreement.
 
 import logging
-
 from typing import Any
+
 import torch
 import torch.utils
 import torch.utils.data
 
-import dinov3.distributed as distributed
-from dinov3.logging import MetricLogger
-
-
+from dinov3 import distributed
 from dinov3.eval.depth.config import (
     DepthConfig,
     ResultConfig,
@@ -21,11 +18,11 @@ from dinov3.eval.depth.config import (
 )
 from dinov3.eval.depth.data import build_dataloader
 from dinov3.eval.depth.datasets.datasets_utils import _EvalCropType, make_valid_mask
-from dinov3.eval.depth.metrics import calculate_depth_metrics, _DepthMetric, DEPTH_METRICS
+from dinov3.eval.depth.metrics import DEPTH_METRICS, _DepthMetric, calculate_depth_metrics
 from dinov3.eval.depth.transforms import Aug, LeftRightFlipAug
 from dinov3.eval.depth.utils import align_depth_least_square
 from dinov3.eval.depth.visualization_utils import depth_tensor_to_colorized_pil, save_predictions
-
+from dinov3.logging import MetricLogger
 
 logger = logging.getLogger("dinov3")
 

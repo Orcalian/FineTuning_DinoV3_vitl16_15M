@@ -3,7 +3,7 @@
 # This software may be used and distributed in accordance with
 # the terms of the DINOv3 License Agreement.
 
-import torch.nn as nn
+from torch import nn
 
 
 class LayerNorm2D(nn.Module):

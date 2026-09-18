@@ -4,8 +4,9 @@
 # the terms of the DINOv3 License Agreement.
 
 import logging
+from collections.abc import Callable
 from functools import lru_cache
-from typing import Any, Callable, Optional
+from typing import Any
 
 import numpy as np
 import torch
@@ -30,7 +31,7 @@ class SubsetEx(Subset):
         return self.dataset.transforms
 
 
-def get_target_transform(dataset) -> Optional[Callable]:
+def get_target_transform(dataset) -> Callable | None:
     if hasattr(dataset, "transforms"):
         if isinstance(dataset.transforms, StandardTransform):
             return dataset.transforms.target_transform
@@ -102,7 +103,7 @@ def _shuffle_dataset(dataset: torch.Tensor, seed: int = 0):
 
 def _subset_dataset_per_class(
     class_indices_mapping: dict[int, torch.Tensor],
-    n_or_percent_per_class: int | float,
+    n_or_percent_per_class: float,
     dataset_size: int,
     seed: int = 0,
     is_percent: bool = False,
@@ -128,7 +129,7 @@ def _subset_dataset_per_class(
 
 def _multilabel_rebalance_subset(
     class_indices_mapping: dict[int, torch.Tensor],
-    n_or_percent_per_class: int | float,
+    n_or_percent_per_class: float,
     labels: torch.Tensor,
     indices_bool: torch.Tensor,
     dataset_size: int,

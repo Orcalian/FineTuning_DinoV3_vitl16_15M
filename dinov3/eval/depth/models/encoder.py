@@ -6,8 +6,9 @@
 import logging
 from enum import Enum
 
-from dinov3.eval.depth.models.embed import CenterPadding, StretchToMultiple
 from torch import Tensor, nn
+
+from dinov3.eval.depth.models.embed import CenterPadding, StretchToMultiple
 
 logger = logging.getLogger("dinov3")
 
@@ -78,19 +79,19 @@ class DinoVisionTransformerWrapper(nn.Module):
 
         # If the backbone does not define embed_dims, use [embed_dim] * n_blocks
         try:
-            embed_dims: list[int] = getattr(self.backbone, "embed_dims")
+            embed_dims: list[int] = self.backbone.embed_dims
         except AttributeError:
-            embed_dim: int = getattr(self.backbone, "embed_dim")
-            n_blocks: int = getattr(self.backbone, "n_blocks")
+            embed_dim: int = self.backbone.embed_dim
+            n_blocks: int = self.backbone.n_blocks
             logger.warning(f"Backbone does not define embed_dims, using {[embed_dim] * n_blocks} instead")
             embed_dims = [embed_dim] * n_blocks
         self.embed_dims = [embed_dims[idx] for idx in self.backbone_out_indices]
 
         # How to adapt input images to the patch size of the model?
         try:
-            input_pad_size = getattr(self.backbone, "input_pad_size")
+            input_pad_size = self.backbone.input_pad_size
         except AttributeError:
-            patch_size = getattr(self.backbone, "patch_size")
+            patch_size = self.backbone.patch_size
             logger.warning(f"Backbone does not define input_pad_size, using {patch_size=} instead")
             input_pad_size = patch_size
         self.patch_size_adapter: nn.Module = nn.Identity()

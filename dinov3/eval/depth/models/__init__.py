@@ -7,12 +7,13 @@ from functools import partial
 from typing import Any
 
 import torch
+
 from dinov3.eval.depth.checkpoint_utils import load_checkpoint
 from dinov3.eval.depth.utils import create_chmv2_mixlog_bins, create_outputs_with_chmv2_mixlog_norm
 
 from .dpt_head import DPTHead
-from .linear_head import LinearHead
 from .encoder import BackboneLayersSet, DinoVisionTransformerWrapper, PatchSizeAdaptationStrategy
+from .linear_head import LinearHead
 
 
 @dataclass

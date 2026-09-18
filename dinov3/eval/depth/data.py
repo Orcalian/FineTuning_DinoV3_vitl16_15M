@@ -11,9 +11,8 @@ from typing import Any
 import numpy as np
 import torch
 
-from dinov3.data import make_dataset, make_data_loader, DatasetWithEnumeratedTargets, SamplerType
-import dinov3.distributed as distributed
-
+from dinov3 import distributed
+from dinov3.data import DatasetWithEnumeratedTargets, SamplerType, make_data_loader, make_dataset
 
 logger = logging.getLogger("dinov3")
 

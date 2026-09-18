@@ -13,7 +13,7 @@ from torch import nn
 from dinov3.distributed import get_process_subgroup, get_subgroup_size
 
 
-def lossfunc(t, s, temp):  # noqa: F811
+def lossfunc(t, s, temp):
     return torch.sum(t.float() * F.log_softmax(s.float() / temp, dim=-1), dim=-1)
 
 

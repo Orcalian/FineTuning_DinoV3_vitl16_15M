@@ -4,8 +4,8 @@
 # the terms of the DINOv3 License Agreement.
 
 import logging
-import numpy as np
 
+import numpy as np
 import torch
 from torch.nn.parallel import DistributedDataParallel as DDP
 

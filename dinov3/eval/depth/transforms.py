@@ -3,18 +3,16 @@
 # This software may be used and distributed in accordance with
 # the terms of the DINOv3 License Agreement.
 
+from collections.abc import Callable
 from enum import Enum
-from typing import Callable
 
 import numpy as np
 import torch
 import torchvision.transforms as T
-from torchvision.transforms import v2
-from torchvision import tv_tensors
-
-
 import torchvision.transforms.functional as TF
 from PIL import Image
+from torchvision import tv_tensors
+from torchvision.transforms import v2
 
 from dinov3.data.transforms import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 

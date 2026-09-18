@@ -3,15 +3,14 @@
 # This software may be used and distributed in accordance with
 # the terms of the DINOv3 License Agreement.
 
-from inspect import signature
 import math
+from inspect import signature
 from typing import Any, Literal
 
 import torch
 from packaging.version import Version
 from torch.optim import lr_scheduler as torch_schedulers
 from torch.optim.optimizer import Optimizer
-
 
 TORCH_VERSION = Version(torch.__version__)
 
@@ -138,7 +137,7 @@ class WarmupOneCycleLR(torch_schedulers.LRScheduler):
 
         if step_num > self.total_steps:
             raise ValueError(
-                f"Tried to step {step_num} times. The specified number of total steps is {self.total_steps}"  # noqa: UP032
+                f"Tried to step {step_num} times. The specified number of total steps is {self.total_steps}"
             )
 
         for group in self.optimizer.param_groups:
@@ -207,7 +206,7 @@ class WarmupMultiStepLR(torch_schedulers.LRScheduler):
 
         if step_num > self.total_steps:
             raise ValueError(
-                f"Tried to step {step_num} times. The specified number of total steps is {self.total_steps}"  # noqa: UP032
+                f"Tried to step {step_num} times. The specified number of total steps is {self.total_steps}"
             )
         for group in self.optimizer.param_groups:
             computed_lr = self._compute_lr(group)

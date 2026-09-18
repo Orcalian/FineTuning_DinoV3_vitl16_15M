@@ -4,19 +4,18 @@
 # the terms of the DINOv3 License Agreement.
 
 # Copyright (c) Facebook, Inc. and its affiliates.
-from typing import Dict, Tuple
 
 from torch import nn
 from torch.nn import functional as F
 
-from dinov3.eval.segmentation.models.heads.pixel_decoder import MSDeformAttnPixelDecoder
 from dinov3.eval.segmentation.models.heads.mask2former_transformer_decoder import MultiScaleMaskedTransformerDecoder
+from dinov3.eval.segmentation.models.heads.pixel_decoder import MSDeformAttnPixelDecoder
 
 
 class Mask2FormerHead(nn.Module):
     def __init__(
         self,
-        input_shape: Dict[str, Tuple[int]],  # ShapeSpec: [channels, height, width, stride]
+        input_shape: dict[str, tuple[int]],  # ShapeSpec: [channels, height, width, stride]
         hidden_dim: int = 2048,
         num_classes: int = 150,
         loss_weight: float = 1.0,

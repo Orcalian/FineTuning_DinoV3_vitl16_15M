@@ -7,14 +7,15 @@ import os
 from enum import Enum
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 from .backbones import (
-    dinov3_vit7b16,
     Weights as BackboneWeights,
-    convert_path_or_url_to_url,
 )
-
+from .backbones import (
+    convert_path_or_url_to_url,
+    dinov3_vit7b16,
+)
 from .utils import _DINOV3_BASE_URL, _safe_load_state_dict_from_url
 
 

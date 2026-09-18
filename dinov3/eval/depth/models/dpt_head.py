@@ -229,7 +229,7 @@ class ConvModule(nn.Module):
 
 class Interpolate(nn.Module):
     def __init__(self, scale_factor, mode, align_corners=False):
-        super(Interpolate, self).__init__()
+        super().__init__()
         self.interp = nn.functional.interpolate
         self.scale_factor = scale_factor
         self.mode = mode
@@ -260,7 +260,7 @@ class UpConvHead(nn.Module):
     """
 
     def __init__(self, features, n_output_channels, n_hidden_channels=32):
-        super(UpConvHead, self).__init__()
+        super().__init__()
         self.n_output_channels = n_output_channels
         self.head = nn.Sequential(
             nn.Conv2d(features, features // 2, kernel_size=3, stride=1, padding=1),
@@ -294,7 +294,7 @@ class ReassembleBlocks(nn.Module):
         readout_type="project",
         use_batchnorm=False,
     ):
-        super(ReassembleBlocks, self).__init__()
+        super().__init__()
 
         assert readout_type in ["ignore", "add", "project"]
         self.readout_type = readout_type
@@ -370,7 +370,7 @@ class PreActResidualConvUnit(nn.Module):
     """
 
     def __init__(self, in_channels, act_cfg, norm_cfg, stride=1, dilation=1, bias=False):
-        super(PreActResidualConvUnit, self).__init__()  # init_cfg)
+        super().__init__()  # init_cfg)
         self.conv1 = ConvModule(
             in_channels,
             in_channels,
@@ -415,7 +415,7 @@ class FeatureFusionBlock(nn.Module):
     """
 
     def __init__(self, in_channels, act_cfg, norm_cfg, expand=False, align_corners=True, bias=False):
-        super(FeatureFusionBlock, self).__init__()  # init_cfg)
+        super().__init__()  # init_cfg)
         self.in_channels = in_channels
         self.expand = expand
         self.align_corners = align_corners
@@ -481,7 +481,7 @@ class DPTHead(nn.Module):
         projection_after_fusion=True,
         **kwargs,
     ):
-        super(DPTHead, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.channels = channels
         self.n_output_channels = n_output_channels
         self.n_hidden_channels = n_hidden_channels

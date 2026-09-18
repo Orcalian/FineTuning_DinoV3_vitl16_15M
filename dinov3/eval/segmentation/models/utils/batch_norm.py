@@ -7,10 +7,10 @@
 import torch
 import torch.distributed as dist
 from torch import nn
-from torch.nn import functional as F
 from torch.nn import BatchNorm2d
+from torch.nn import functional as F
 
-import dinov3.distributed as distributed
+from dinov3 import distributed
 
 
 class FrozenBatchNorm2d(nn.Module):
@@ -99,7 +99,7 @@ class FrozenBatchNorm2d(nn.Module):
         )
 
     def __repr__(self):
-        return "FrozenBatchNorm2d(num_features={}, eps={})".format(self.num_features, self.eps)
+        return f"FrozenBatchNorm2d(num_features={self.num_features}, eps={self.eps})"
 
     @classmethod
     def convert_frozen_batchnorm(cls, module):

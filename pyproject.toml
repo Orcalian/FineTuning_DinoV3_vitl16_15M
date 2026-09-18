@@ -42,6 +42,8 @@ ignore = [
     "RUF012",
     "RUF046",
     "T100",
+    "E741",
+    "E721",
 ]
 
 [tool.pylint.master]

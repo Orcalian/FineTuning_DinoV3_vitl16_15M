@@ -28,9 +28,9 @@ import logging
 import shutil
 import subprocess
 import tempfile
+from collections.abc import Sequence
 from enum import Enum
 from pathlib import Path
-from typing import List, Sequence, Set
 
 import torch
 import torch.distributed as dist
@@ -50,7 +50,7 @@ class CheckpointRetentionPolicy(Enum):
     NONE = "none"  # do not keep any checkpoints
 
     @property
-    def keep_filters(self) -> Set[str]:
+    def keep_filters(self) -> set[str]:
         """Files that match these patterns are not deleted by cleanup"""
         if self == CheckpointRetentionPolicy.LAST:
             return set(["final"])
@@ -268,8 +268,8 @@ def _is_int(s: str) -> bool:
 def init_fsdp_model_from_checkpoint(
     model: torch.nn.Module,
     checkpoint_path: str,
-    skip_load_keys: List[str] | None = None,
-    keys_not_sharded: List[str] | None = None,
+    skip_load_keys: list[str] | None = None,
+    keys_not_sharded: list[str] | None = None,
     process_group: dist.ProcessGroup = None,
 ):
     if not Path(checkpoint_path).is_dir():  # PyTorch standard checkpoint
@@ -324,7 +324,7 @@ def init_model_from_checkpoint_for_evals(
     # remove `backbone.` prefix induced by multicrop wrapper
     state_dict = {k.replace("backbone.", ""): v for k, v in state_dict.items()}
     msg = model.load_state_dict(state_dict, strict=False)
-    logger.info("Pretrained weights found at {} and loaded with msg: {}".format(pretrained_weights, msg))
+    logger.info(f"Pretrained weights found at {pretrained_weights} and loaded with msg: {msg}")
 
 
 def cleanup_checkpoint(ckpt_dir: str, checkpoint_retention_policy: CheckpointRetentionPolicy):

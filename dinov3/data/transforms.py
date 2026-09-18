@@ -4,7 +4,7 @@
 # the terms of the DINOv3 License Agreement.
 
 import logging
-from typing import Sequence
+from collections.abc import Sequence
 
 import torch
 from torchvision.transforms import v2

@@ -4,18 +4,20 @@
 # the terms of the DINOv3 License Agreement.
 
 from enum import Enum
-from typing import Optional, Tuple
 
 import torch
+
 from dinov3.eval.depth.models import DecoderConfig, make_depther_from_config
 
-from .utils import _DINOV3_BASE_URL, _safe_load_state_dict_from_url
 from .backbones import (
     Weights as BackboneWeights,
-    dinov3_vitl16,
-    dinov3_vit7b16,
-    convert_path_or_url_to_url,
 )
+from .backbones import (
+    convert_path_or_url_to_url,
+    dinov3_vit7b16,
+    dinov3_vitl16,
+)
+from .utils import _DINOV3_BASE_URL, _safe_load_state_dict_from_url
 
 
 class DepthWeights(Enum):
@@ -64,7 +66,7 @@ _BACKBONE_DICT = {
 
 def _get_depther_config(
     backbone_name: str = "dinov3_vit7b16",
-    depth_range: Optional[Tuple[float, float]] = None,
+    depth_range: tuple[float, float] | None = None,
     **kwargs,
 ):
     out_index = _get_out_layers(backbone_name)
@@ -97,7 +99,7 @@ def _make_dinov3_dpt_depther(
     pretrained: bool = True,
     depther_weights: DepthWeights | str = DepthWeights.SYNTHMIX,
     backbone_weights: BackboneWeights | str = BackboneWeights.LVD1689M,
-    depth_range: Optional[Tuple[float, float]] = None,
+    depth_range: tuple[float, float] | None = None,
     check_hash: bool = False,
     autocast_dtype: torch.dtype = torch.float32,
     **kwargs,

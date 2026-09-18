@@ -3,12 +3,13 @@
 # This software may be used and distributed in accordance with
 # the terms of the DINOv3 License Agreement.
 
-import numpy as np
-from PIL import Image
-from typing import Any, List, Optional, Sequence, Tuple, Union
+from collections.abc import Sequence
+from typing import Any
 
+import numpy as np
 import torch
 import torch.nn.functional as F
+from PIL import Image
 from torchvision import transforms as T
 from torchvision.transforms import functional as Fv
 from torchvision.transforms import v2
@@ -80,7 +81,7 @@ class PhotoMetricDistortion(torch.nn.Module):
             img = img_tensor.permute((1, 2, 0)).numpy()
         return img
 
-    def forward(self, img, label) -> Tuple[torch.Tensor, Any]:
+    def forward(self, img, label) -> tuple[torch.Tensor, Any]:
         """Transform function to perform photometric distortion on images."""
         # Operations need numpy arrays
         img = img.permute((1, 2, 0)).numpy()
@@ -390,11 +391,11 @@ class MaskToTensor(torch.nn.Module):
 
 def make_segmentation_train_transforms(
     *,
-    img_size: Optional[Union[List[int], int]] = None,
+    img_size: list[int] | int | None = None,
     image_interpolation: T.InterpolationMode = T.InterpolationMode.BILINEAR,
     label_interpolation: T.InterpolationMode = T.InterpolationMode.NEAREST,
-    random_img_size_ratio_range: Optional[List[float]] = None,
-    crop_size: Optional[Tuple[int]] = None,
+    random_img_size_ratio_range: list[float] | None = None,
+    crop_size: tuple[int] | None = None,
     flip_prob: float = 0.0,
     reduce_zero_label: bool = False,
     mean: Sequence[float] = [mean * 255 for mean in IMAGENET_DEFAULT_MEAN],
@@ -442,7 +443,7 @@ def make_segmentation_train_transforms(
 
 def make_segmentation_eval_transforms(
     *,
-    img_size: Optional[Union[List[int], int]] = None,
+    img_size: list[int] | int | None = None,
     inference_mode: str = "whole",
     image_interpolation: T.InterpolationMode = T.InterpolationMode.BILINEAR,
     label_interpolation: T.InterpolationMode = T.InterpolationMode.NEAREST,

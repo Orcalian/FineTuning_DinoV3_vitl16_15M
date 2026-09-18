@@ -8,13 +8,14 @@ import math
 import os
 import pathlib
 import sys
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import timedelta
-from typing import Any, List, Optional, Sequence, Tuple
+from typing import Any
 
 from omegaconf import DictConfig, OmegaConf
 
-import dinov3.distributed as distributed
+from dinov3 import distributed
 from dinov3.logging import cleanup_logging, setup_logging
 from dinov3.utils import fix_random_seeds, get_conda_env, get_sha
 
@@ -27,7 +28,7 @@ class DinoV3SetupArgs:
     pretrained_weights: str | None = None
     shard_unsharded_model: bool = False
     output_dir: str = ""
-    opts: List[Any] = field(default_factory=lambda: [])
+    opts: list[Any] = field(default_factory=list)
 
     def __post_init__(self):
         # When loaded from benchmark.yaml, self.opts is a frozen omegaconf.ListConfig,
@@ -106,7 +107,7 @@ def setup_config(args: DinoV3SetupArgs, strict_cfg=True):
     return cfg
 
 
-def _enumerate_all_subgroup_ranks(all_subgroup_rank_spans: Sequence[Tuple[int, int]]):
+def _enumerate_all_subgroup_ranks(all_subgroup_rank_spans: Sequence[tuple[int, int]]):
     """Expands a specification of process subgroups from spans to enumerated ranks.
 
     Args:
@@ -171,10 +172,10 @@ def setup_multidistillation(args: DinoV3SetupArgs):
 
 
 def setup_job(
-    output_dir: Optional[str] = None,
+    output_dir: str | None = None,
     distributed_enabled: bool = True,
     logging_enabled: bool = True,
-    seed: Optional[int] = 0,
+    seed: int | None = 0,
     restrict_print_to_main_process: bool = True,
     distributed_timeout: timedelta | None = None,
 ):
@@ -206,7 +207,7 @@ def setup_job(
         fix_random_seeds(seed + rank)
 
     logger = logging.getLogger("dinov3")
-    logger.info("git:\n  {}\n".format(get_sha()))
+    logger.info(f"git:\n  {get_sha()}\n")
 
     # Log some python info
     conda_env_name, conda_env_path = get_conda_env()

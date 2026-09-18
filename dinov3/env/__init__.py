@@ -27,7 +27,7 @@ def clean_env():
         yield
 
 
-def set_triton_cache_dir(cache_dir: Optional[str] = None) -> None:
+def set_triton_cache_dir(cache_dir: str | None = None) -> None:
     if cache_dir is None:
         cache_dir = tempfile.mkdtemp()
     os.environ["TRITON_CACHE_DIR"] = cache_dir

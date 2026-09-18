@@ -5,7 +5,7 @@
 
 import logging
 from enum import Enum
-from typing import Any, Dict, Optional
+from typing import Any
 
 import numpy as np
 import torch
@@ -93,7 +93,7 @@ def _make_default_ks(num_classes: int):
 
 
 def build_classification_metric(
-    metric_type: ClassificationMetricType, *, num_classes: int, ks: Optional[tuple] = None, dataset=None
+    metric_type: ClassificationMetricType, *, num_classes: int, ks: tuple | None = None, dataset=None
 ):
     if metric_type.is_topk_accuracy_metric:
         ks = ks or _make_default_ks(num_classes)
@@ -139,21 +139,21 @@ def build_classification_metric(
 
 
 def build_topk_accuracy_metric(average_type: AveragingMethod, num_classes: int, ks: tuple = (1, 5)):
-    metrics: Dict[str, Metric] = {
+    metrics: dict[str, Metric] = {
         f"top-{k}": MulticlassAccuracy(top_k=k, num_classes=int(num_classes), average=average_type.value) for k in ks
     }
     return MetricCollection(metrics)
 
 
 def build_topk_recall_metric(average_type: AveragingMethod, num_classes: int, ks: tuple = (1, 5)):
-    metrics: Dict[str, Metric] = {
+    metrics: dict[str, Metric] = {
         f"top-{k}": MulticlassRecall(top_k=k, num_classes=int(num_classes), average=average_type.value) for k in ks
     }
     return MetricCollection(metrics)
 
 
 def build_topk_any_match_accuracy_metric(num_classes: int, ks: tuple = (1, 5)):
-    metrics: Dict[str, Metric] = {f"top-{k}": AnyMatchAccuracy(top_k=k, num_classes=int(num_classes)) for k in ks}
+    metrics: dict[str, Metric] = {f"top-{k}": AnyMatchAccuracy(top_k=k, num_classes=int(num_classes)) for k in ks}
     return MetricCollection(metrics)
 
 
@@ -182,7 +182,7 @@ class AnyMatchAccuracy(Metric):
     """
 
     is_differentiable: bool = False
-    higher_is_better: Optional[bool] = None
+    higher_is_better: bool | None = None
     full_state_update: bool = False
 
     def __init__(
@@ -233,7 +233,7 @@ class GroupByAnyMatchAccuracy(AnyMatchAccuracy):
     ) -> None:
         super().__init__(**kwargs)
         assert hasattr(dataset, "get_groupby_labels"), "The dataset should have a `get_groupby_labels` method"
-        self._groupby_labels: Dict[str, np.ndarray] = dataset.get_groupby_labels()
+        self._groupby_labels: dict[str, np.ndarray] = dataset.get_groupby_labels()
         assert hasattr(dataset, "get_mapped_targets"), "The dataset should have a `get_mapped_targets` method"
         self._mapped_targets: torch.Tensor = torch.from_numpy(dataset.get_mapped_targets())
         self.add_state("indices", [], dist_reduce_fx="cat")
@@ -242,7 +242,7 @@ class GroupByAnyMatchAccuracy(AnyMatchAccuracy):
         self.indices.append(target)  # target are indices in this case
         super().update(preds, self._mapped_targets[target.tolist()].to(preds.device))
 
-    def groupby_metric(self, variable: np.ndarray, indices: np.ndarray, tp: torch.Tensor) -> Dict[Any, Tensor]:
+    def groupby_metric(self, variable: np.ndarray, indices: np.ndarray, tp: torch.Tensor) -> dict[Any, Tensor]:
         groubpy_dict = {}
         for v in set(variable):
             index = np.where(variable[indices] == v)[0]
@@ -256,7 +256,7 @@ class GroupByAnyMatchAccuracy(AnyMatchAccuracy):
         results_dict = {"top-1": global_score}
         for label_name, label_value in self._groupby_labels.items():
             groupby_results = self.groupby_metric(label_value, indices, tp)
-            printable_results = {k: f"{100. * v.item():.4g}" for k, v in groupby_results.items()}
+            printable_results = {k: f"{100.0 * v.item():.4g}" for k, v in groupby_results.items()}
             logger.info(f"Scores by {label_name} {printable_results}\n")
             results_dict = {**results_dict, **groupby_results}
         return results_dict
@@ -276,7 +276,7 @@ class MacroAveragedMeanReciprocalRank(Metric):
     """
 
     is_differentiable: bool = False
-    higher_is_better: Optional[bool] = None
+    higher_is_better: bool | None = None
     full_state_update: bool = False
 
     def __init__(

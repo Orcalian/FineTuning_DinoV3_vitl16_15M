@@ -5,16 +5,15 @@
 
 import logging
 from pathlib import Path
-
 from typing import Union
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 from dinov3.layers.fp8_linear import convert_linears_to_fp8
 
-from . import vision_transformer as vits
 from . import convnext
+from . import vision_transformer as vits
 
 logger = logging.getLogger("dinov3")
 
@@ -98,7 +97,7 @@ def build_model_from_cfg(cfg, only_teacher: bool = False):
 
 def build_model_for_eval(
     config,
-    pretrained_weights: Union[str, Path] | None,
+    pretrained_weights: str | Path | None,
     shard_unsharded_model: bool = False,  # If the model is not sharded, shard it. No effect if already sharded on disk
 ):
     model, _ = build_model_from_cfg(config, only_teacher=True)

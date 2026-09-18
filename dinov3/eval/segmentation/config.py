@@ -5,15 +5,14 @@
 
 from dataclasses import dataclass, field
 from enum import Enum
-from omegaconf import MISSING
 from typing import Any
 
 import torch
+from omegaconf import MISSING
 
 from dinov3.data.transforms import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from dinov3.eval.segmentation.models import BackboneLayersSet
 from dinov3.eval.setup import ModelConfig
-
 
 DEFAULT_MEAN = tuple(mean * 255 for mean in IMAGENET_DEFAULT_MEAN)
 DEFAULT_STD = tuple(std * 255 for std in IMAGENET_DEFAULT_STD)

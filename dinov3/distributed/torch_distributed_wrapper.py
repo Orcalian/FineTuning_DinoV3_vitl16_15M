@@ -8,9 +8,9 @@ import os
 import random
 import socket
 import subprocess
+from collections.abc import Sequence
 from datetime import timedelta
 from enum import Enum
-from typing import List, Sequence
 
 import torch
 import torch.distributed as dist
@@ -101,7 +101,7 @@ def _get_available_port() -> int:
         return port
 
 
-def _parse_slurm_node_list(s: str) -> List[str]:
+def _parse_slurm_node_list(s: str) -> list[str]:
     return subprocess.check_output(["scontrol", "show", "hostnames", s], text=True).splitlines()
 
 
@@ -206,18 +206,18 @@ class TorchDistributedEnvironment:
         return (
             f"{self.job_type.value} job "
             + (f"({self.job_id}) " if self.job_id else "")
-            + f"using {self.master_addr}:{self.master_port} "  # noqa: E231
+            + f"using {self.master_addr}:{self.master_port} "
             f"(rank={self.rank}, world size={self.world_size})"
         )
 
     def __repr__(self):
         return (
             f"{self.__class__.__name__}("
-            f"master_addr={self.master_addr},"  # noqa: E231
-            f"master_port={self.master_port},"  # noqa: E231
-            f"rank={self.rank},"  # noqa: E231
-            f"world_size={self.world_size},"  # noqa: E231
-            f"local_rank={self.local_rank},"  # noqa: E231
+            f"master_addr={self.master_addr},"
+            f"master_port={self.master_port},"
+            f"rank={self.rank},"
+            f"world_size={self.world_size},"
+            f"local_rank={self.local_rank},"
             f"local_world_size={self.local_world_size}"
             ")"
         )
