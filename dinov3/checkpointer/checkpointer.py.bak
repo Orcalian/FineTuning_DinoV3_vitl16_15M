@@ -293,20 +293,13 @@ def init_fsdp_model_from_checkpoint(
             )
             for key, tensor in chkpt.items()
         }
-        missing, unexpected = model.load_state_dict(
+        model.load_state_dict(
             {
                 key: tensor
                 for key, tensor in chkpt.items()
                 if not any(skip_load_key in key for skip_load_key in skip_load_keys)
-            },
-            strict=False,
+            }
         )
-        # Init depuis backbone pre-entraine : les tetes (dino_head/ibot_head) et
-        # local_cls_norm sont initialisees from scratch -> manquantes attendues.
-        if missing:
-            print(f"[init backbone] {len(missing)} cles manquantes (tetes from scratch), ex:", missing[:4])
-        if unexpected:
-            print(f"[init backbone] {len(unexpected)} cles inattendues, ex:", unexpected[:4])
     else:  # DCP checkpoint
         load_checkpoint(ckpt_dir=checkpoint_path, model=model, process_group=process_group)
 
